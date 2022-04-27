@@ -1,0 +1,3 @@
+create these index patterns 
+- .monitoring-es-*
+- stack_monitoring-shard_level-v02

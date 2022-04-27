@@ -1,0 +1,54 @@
+PUT _transform/stack_monitoring-shard_level-v02
+{
+  "source": {
+    "index": [
+      ".monitoring-es-*"
+    ],
+    "query": {
+      "bool": {
+        "should": [
+          {
+            "match_phrase": {
+              "metricset.name": "shard"
+            }
+          }
+        ],
+        "minimum_should_match": 1
+      }
+    },
+    "runtime_mappings": {
+      "index_stats.shards.active_total": {
+        "type": "long"
+      }
+    }
+  },
+  "latest": {
+    "unique_key": [
+      "elasticsearch.cluster.id",
+      "elasticsearch.index.name",
+      "elasticsearch.shard.primary",
+      "elasticsearch.shard.number"
+    ],
+    "sort": "@timestamp"
+  },
+  "description": "Latest shard monitoring data by key cluster.id-index.name-shard.primary-shard.number",
+  "frequency": "1m",
+  "dest": {
+    "index": "stack_monitoring-shard_level-v02"
+  },
+  "sync": {
+    "time": {
+      "field": "@timestamp",
+      "delay": "60s"
+    }
+  },
+  "retention_policy": {
+    "time": {
+      "field": "@timestamp",
+      "max_age": "7d"
+    }
+  },
+  "settings": {
+    "max_page_search_size": 500
+  }
+}
